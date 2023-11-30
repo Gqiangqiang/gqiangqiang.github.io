@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>节流与防抖 | Gridea</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://gqiangqiang.github.io/favicon.ico?v=1701306253487">
+<link rel="stylesheet" href="https://gqiangqiang.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="防抖
+
+触发事件后，在n秒内，事件只执行一次，如果在n秒内又触发了事件，则会重新计算函数的执行时间。
+
+比如点击按钮，规定了2秒的间隔时间，结果在1.5秒的时候又点了，则会重新计算2秒的时间，必须等待2秒后点击才会生效。
+应用场景举例：下拉..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://gqiangqiang.github.io">
+        <img src="https://gqiangqiang.github.io/images/avatar.png?v=1701306253487" class="site-logo">
+        <h1 class="site-title">Gridea</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            文章
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="about/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      温故而知新
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://gqiangqiang.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">节流与防抖</h2>
+            <div class="post-date">2023-11-30</div>
+            
+            <div class="post-content" v-pre>
+              <h2 id="防抖">防抖</h2>
+<blockquote>
+<p>触发事件后，在n秒内，事件只执行一次，如果在n秒内又触发了事件，则会重新计算函数的执行时间。</p>
+</blockquote>
+<p>比如点击按钮，规定了2秒的间隔时间，结果在1.5秒的时候又点了，则会重新计算2秒的时间，必须等待2秒后点击才会生效。<br>
+应用场景举例：下拉触底加载下一页。<br>
+<strong>代码示例：</strong></p>
+<pre><code class="language-js">&lt;script&gt;
+	let count = 0, time = null, interval = 2000
+	
+	document.querySelector('body').onclick = () =&gt; {
+		if (!time || new Date() - time &gt;= interval) {
+			count++
+			console.log(`点击了${count}次`)
+		}
+		time = new Date()
+	}
+&lt;/script&gt;
+</code></pre>
+<h2 id="节流">节流</h2>
+<blockquote>
+<p>连续发生的事件在n秒内，只执行一次。</p>
+</blockquote>
+<p>比如某个按钮在3秒内被点击了数次，但只会执行一次。<br>
+应用场景举例：搜索查询（按钮）、获取短信验证码<br>
+<strong>代码示例：</strong></p>
+<pre><code class="language-js">&lt;script&gt;
+	let count = 0, time = null, interval = 3000
+	
+	document.querySelector('body').onclick = () =&gt; {
+		if (!time || new Date() - time &gt;= interval) {
+			time = new Date()
+			count++
+			console.log(`点击了${count}次`)
+		}
+	}
+&lt;/script&gt;21
+</code></pre>
+<p><em>上文中的示例代码可以直接复制到浏览器控制台查看效果</em></p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://gqiangqiang.github.io/post/wenzhang/">
+                  <h3 class="post-title">
+                    开端
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>

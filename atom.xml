@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://gqiangqiang.github.io</id>
+    <title>Gridea</title>
+    <updated>2023-11-30T01:04:22.328Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://gqiangqiang.github.io"/>
+    <link rel="self" href="https://gqiangqiang.github.io/atom.xml"/>
+    <subtitle>温故而知新</subtitle>
+    <logo>https://gqiangqiang.github.io/images/avatar.png</logo>
+    <icon>https://gqiangqiang.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2023, Gridea</rights>
+    <entry>
+        <title type="html"><![CDATA[节流与防抖]]></title>
+        <id>https://gqiangqiang.github.io/post/jie-liu-yu-fang-dou/</id>
+        <link href="https://gqiangqiang.github.io/post/jie-liu-yu-fang-dou/">
+        </link>
+        <updated>2023-11-30T00:59:39.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="防抖">防抖</h2>
+<blockquote>
+<p>触发事件后，在n秒内，事件只执行一次，如果在n秒内又触发了事件，则会重新计算函数的执行时间。</p>
+</blockquote>
+<p>比如点击按钮，规定了2秒的间隔时间，结果在1.5秒的时候又点了，则会重新计算2秒的时间，必须等待2秒后点击才会生效。<br>
+应用场景举例：下拉触底加载下一页。<br>
+<strong>代码示例：</strong></p>
+<pre><code class="language-js">&lt;script&gt;
+	let count = 0, time = null, interval = 2000
+	
+	document.querySelector('body').onclick = () =&gt; {
+		if (!time || new Date() - time &gt;= interval) {
+			count++
+			console.log(`点击了${count}次`)
+		}
+		time = new Date()
+	}
+&lt;/script&gt;
+</code></pre>
+<h2 id="节流">节流</h2>
+<blockquote>
+<p>连续发生的事件在n秒内，只执行一次。</p>
+</blockquote>
+<p>比如某个按钮在3秒内被点击了数次，但只会执行一次。<br>
+应用场景举例：搜索查询（按钮）、获取短信验证码<br>
+<strong>代码示例：</strong></p>
+<pre><code class="language-js">&lt;script&gt;
+	let count = 0, time = null, interval = 3000
+	
+	document.querySelector('body').onclick = () =&gt; {
+		if (!time || new Date() - time &gt;= interval) {
+			time = new Date()
+			count++
+			console.log(`点击了${count}次`)
+		}
+	}
+&lt;/script&gt;21
+</code></pre>
+<p><em>上文中的示例代码可以直接复制到浏览器控制台查看效果</em></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[开端]]></title>
+        <id>https://gqiangqiang.github.io/post/wenzhang/</id>
+        <link href="https://gqiangqiang.github.io/post/wenzhang/">
+        </link>
+        <updated>2023-11-29T00:56:05.000Z</updated>
+        <content type="html"><![CDATA[<p>《开端》是我比较喜欢的电视剧，将之作为我的第一篇文章的标题也是再合适不过了。</p>
+]]></content>
+    </entry>
+</feed>
