@@ -5,7 +5,7 @@
   },
   "scripts": {
     "files:dev": "vitepress dev files",
-    "files:build": "vitepress build files && ./move_and_replace.sh files/my-life index/",
+    "files:build": "vitepress build files && ./move_and_replace.sh files/my-life docs/",
     "files:preview": "vitepress preview files"
   }
 }
