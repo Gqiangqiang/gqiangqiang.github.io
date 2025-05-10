@@ -14,6 +14,8 @@ import { ref, watch } from 'vue'
 let show = ref(true)
 const route = useRoute()
 watch(() => route.path, () => {
+  console.log('routechange', route.path);
+  
   show.value = false
   setTimeout(() => {
     show.value = true
