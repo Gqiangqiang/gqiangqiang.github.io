@@ -2,8 +2,9 @@
 import { ref, onMounted } from 'vue'
 import { data } from '../getAllArticles.data.js'
 const articles = ref(data)
-let currentPage = ref(1)
-console.log(articles.value);
+onMounted(() => {
+  console.log(articles.value)
+})
 
 </script>
 
