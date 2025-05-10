@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useData } from 'vitepress'
+import { useData, useRoute } from 'vitepress'
 import MyHeader from './components/MyHeader.vue'
 import Footer from './components/Footer.vue'
 import Article from './components/Article.vue'
@@ -10,21 +10,33 @@ import Articles from './pages/Articles.vue'
 import About from './pages/About.vue'
 import Tags from './pages/Tags.vue'
 const { page, frontmatter } = useData()
+import { ref, watch } from 'vue'
+let show = ref(true)
+const route = useRoute()
+watch(() => route.path, () => {
+  show.value = false
+  setTimeout(() => {
+    show.value = true
+  }, 0)
+})
+
 
 </script>
 
 <template>
   <div class="container flex flex-column">
-    <MyHeader />
-    <main class="container-main">
-      <NotFound v-if="page.isNotFound" />
-      <Home v-if="frontmatter.layout === 'home'" />
-      <Tags v-else-if="frontmatter.layout === 'tags'" />
-      <Articles v-else-if="frontmatter.layout === 'articles'"/>
-      <About v-else-if="frontmatter.layout === 'about'"/>
-      <Article v-else/>
-    </main>
-    <Footer />
+    <NotFound v-if="page.isNotFound" />
+    <template v-else>
+      <MyHeader />
+      <main class="container-main" v-if="show">
+        <Home v-if="frontmatter.layout === 'home'" />
+        <Tags v-else-if="frontmatter.layout === 'tags'" />
+        <Articles v-else-if="frontmatter.layout === 'articles'"/>
+        <About v-else-if="frontmatter.layout === 'about'"/>
+        <Article v-else/>
+      </main>
+      <Footer />
+    </template>
   </div>
 </template>
 
