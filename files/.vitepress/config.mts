@@ -6,23 +6,11 @@ export default defineConfig({
   description: "A Life Note Site",
   themeConfig: {
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Life', link: '/life' },
-      { text: 'Code', link: '/code' },
-      { text: 'Book', link: '/book' },
-      { text: 'About', link: '/about' }
+      { text: '首页', link: '/', activeMatch: 'home' },
+      { text: '博客', link: '/articles', activeMatch: 'articles' },
+      { text: '标签', link: '/tags', activeMatch: 'tags' },
+      { text: '关于', link: '/about', activeMatch: 'about' }
     ],
-    // sidebar: [
-    //   {
-    //     text: 'Life',
-    //     items: [
-    //       { text: 'Life', link: '/life' },
-    //       { text: 'Life2', link: '/life2' },
-    //       { text: 'Life3', link: '/life3' },
-    //       { text: 'Life4', link: '/life4' }
-    //     ]
-    //   },
-    // ]
   },
   markdown: {
     headers: {

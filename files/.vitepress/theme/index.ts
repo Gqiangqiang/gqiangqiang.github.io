@@ -8,9 +8,6 @@ import './styles/style.css'
 
 export default {
   extends: DefaultTheme,
-  Layout,
-  enhanceApp({ app, router, siteData }) {
-    // ...
-  }
+  Layout
 } satisfies Theme
 

@@ -18,7 +18,14 @@
 
 <script>
 export default {
-  name: 'NotFound'
+  name: 'NotFound',
+  methods: {
+    back() {
+      console.log('???', this.$router);
+      
+      this.$router.back()
+    }
+  }
 }
 </script>
 

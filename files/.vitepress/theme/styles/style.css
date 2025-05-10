@@ -1,3 +1,94 @@
+/* 鼠标图标--手指 */
 .pointer {
   cursor: pointer;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 文字加粗 */
+.bold {
+	font-weight: bold;
+}
+
+/* 文字省略 */
+.ellipsis-1 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ellipsis-2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* flex布局模式 */
+.flex {
+  display: flex;
+}
+
+/* 横向 */
+.flex-row {
+  flex-direction: row;
+}
+.flex-center {
+	justify-content: center;
+}
+.flex-between {
+	justify-content: space-between;
+}
+.flex-around {
+	justify-content: space-around;
+}
+.flex-end {
+	justify-content: flex-end;
+}
+.flex-start {
+	justify-content: flex-start;
+}
+
+/* 纵向 */
+.flex-column {
+  flex-direction: column;
+}
+
+/* align-items */
+.align-items-center {
+  align-items: center;
+}
+.align-items-start  {
+  align-items: flex-start;
+}
+.align-items-end {
+  align-items: flex-end;
+}
+.align-items-baseline {
+  align-items: baseline;
+}
+.align-items-stretch {
+  align-items: stretch;
+}
+
+.flex-1 {
+  flex: 1;
+}
+.flex-2 {
+  flex: 2;
+}
+.flex-3 {
+  flex: 3;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* 圆形 */
+.circle {
+  border-radius: 50%;
 }

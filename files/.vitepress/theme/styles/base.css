@@ -1,5 +1,14 @@
+:root {
+  --theme-color-title: #18191b;
+  --theme-color-text: #52555a;
+  --theme-color-assist: #a7abb3;
+  --theme-color-intersperse: #e94328;
+
+  --theme-max-width: 1440px;
+}
+
 html {
-  font-family: echo, Arial, Helvetica;
+  font-family: Arial, Helvetica;
 }
 
 body {
@@ -7,9 +16,15 @@ body {
   padding: 0;
 }
 
+#app {
+  width: 100%;
+  height: 100vh;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-weight: bold;
   line-height: normal;
+  margin: 40px 0 20px 0;
 }
 h1 {
   font-size: 3em;
@@ -28,8 +43,4 @@ h5 {
 }
 h6 {
   font-size: 1em;
-}
-
-:root {
-  
 }
