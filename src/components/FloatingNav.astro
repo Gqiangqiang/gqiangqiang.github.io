@@ -1,0 +1,438 @@
+---
+/**
+ * 悬浮式导航组件
+ * 极简设计 - 点击展开全屏菜单
+ */
+import ThemeToggle from './ThemeToggle.astro';
+import { siteConfig } from '../config';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '' } = Astro.props;
+const navLinks = siteConfig.nav;
+---
+
+<!-- 悬浮导航按钮 -->
+<button class="nav-trigger" id="navTrigger" aria-label="打开导航">
+  <span class="trigger-line"></span>
+  <span class="trigger-line"></span>
+</button>
+
+<!-- 主题切换悬浮按钮 -->
+<div class="theme-float">
+  <ThemeToggle />
+</div>
+
+<!-- 全屏导航菜单 -->
+<div class="nav-overlay" id="navOverlay">
+  <div class="nav-content">
+    <!-- 左侧：大字导航 -->
+    <nav class="nav-primary">
+      {navLinks.map((link, index) => (
+        <a
+          href={link.href}
+          class:list={['nav-item', { active: currentPath === link.href }]}
+          style={`--delay: ${index * 80}ms`}
+        >
+          <span class="nav-label">{link.label}</span>
+          <span class="nav-label-en">{link.labelEn}</span>
+          <span class="nav-line"></span>
+        </a>
+      ))}
+    </nav>
+
+    <!-- 右侧：品牌信息 -->
+    <div class="nav-brand">
+      <div class="brand-signature">
+        <span class="signature-cn">{siteConfig.name}</span>
+        <span class="signature-en">{siteConfig.nameEn}</span>
+      </div>
+      <p class="brand-tagline">{siteConfig.description}</p>
+    </div>
+  </div>
+
+  <!-- 关闭按钮 -->
+  <button class="nav-close" id="navClose" aria-label="关闭导航">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <line x1="4" y1="4" x2="20" y2="20"/>
+      <line x1="20" y1="4" x2="4" y2="20"/>
+    </svg>
+  </button>
+</div>
+
+<style>
+  /* 悬浮触发按钮 */
+  .nav-trigger {
+    position: fixed;
+    top: var(--space-6);
+    left: var(--space-6);
+    z-index: 1000;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-light);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+  }
+
+  .nav-trigger:hover {
+    transform: scale(1.05);
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .trigger-line {
+    width: 18px;
+    height: 2px;
+    background: var(--color-text-primary);
+    border-radius: 2px;
+    transition: all var(--transition-fast);
+    transform-origin: center;
+  }
+
+  .nav-trigger.active .trigger-line:first-child {
+    transform: rotate(45deg) translate(3px, 3px);
+  }
+
+  .nav-trigger.active .trigger-line:last-child {
+    transform: rotate(-45deg) translate(3px, -3px);
+  }
+
+  /* 主题切换悬浮 */
+  .theme-float {
+    position: fixed;
+    top: var(--space-6);
+    right: var(--space-6);
+    z-index: 1000;
+  }
+
+  /* 全屏导航遮罩 */
+  .nav-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: var(--color-bg-primary);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .nav-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-16);
+    height: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-12) var(--space-16);
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+    overflow-y: auto;
+    align-items: center;
+  }
+
+  /* 主导航 */
+  .nav-primary {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /*gap: var(--space-4);
+    max-height: 80vh;*/
+    overflow-y: hidden;
+  }
+
+  .nav-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    text-decoration: none;
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--delay);
+  }
+
+  .nav-overlay.active .nav-content {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .nav-overlay.active .nav-item {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .nav-label {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    transition: color var(--transition-fast);
+  }
+
+  .nav-label-en {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .nav-line {
+    width: 0;
+    height: 3px;
+    background: var(--color-accent);
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-item:hover .nav-label {
+    color: var(--color-accent);
+  }
+
+  .nav-item:hover .nav-line {
+    width: 100%;
+  }
+
+  .nav-item.active .nav-label {
+    color: var(--color-accent);
+  }
+
+  .nav-item.active .nav-line {
+    width: 60px;
+  }
+
+  /* 品牌区域 */
+  .nav-brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    gap: var(--space-8);
+    padding-left: var(--space-16);
+    border-left: 1px solid var(--color-border-light);
+  }
+
+  .brand-signature {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
+
+  .signature-cn {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 10vw, 8rem);
+    font-weight: 300;
+    color: var(--color-text-primary);
+    line-height: 1;
+    letter-spacing: 0.1em;
+    opacity: 0.15;
+  }
+
+  .signature-en {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  .brand-tagline {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    text-align: right;
+    margin: 0;
+    max-width: 280px;
+  }
+
+  /* 关闭按钮 */
+  .nav-close {
+    position: absolute;
+    top: var(--space-6);
+    right: var(--space-6);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--color-border-light);
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast);
+    opacity: 0;
+    transform: rotate(-90deg);
+  }
+
+  .nav-overlay.active .nav-close {
+    opacity: 1;
+    transform: rotate(0);
+    transition-delay: 0.3s;
+  }
+
+  .nav-close:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-text-primary);
+    transform: rotate(90deg);
+  }
+
+  .nav-close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* 响应式 */
+  @media (max-width: 900px) {
+    .nav-content {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+      padding: var(--space-16) var(--space-8);
+    }
+
+    .nav-primary {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--space-4);
+      max-height: 50vh;
+      overflow-y: auto;
+      padding: var(--space-4) 0;
+    }
+
+    .nav-item {
+      flex: 0 0 calc(50% - var(--space-3));
+      max-width: calc(50% - var(--space-3));
+      transform: translateY(20px);
+    }
+
+    .nav-label {
+      font-size: 2rem;
+    }
+
+    .nav-label-en {
+      font-size: var(--text-xs);
+    }
+
+    .nav-brand {
+      align-items: flex-start;
+      padding-left: 0;
+      padding-top: var(--space-6);
+      border-left: none;
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .brand-signature {
+      align-items: flex-start;
+    }
+
+    .signature-cn {
+      font-size: 3rem;
+    }
+
+    .brand-tagline {
+      text-align: left;
+    }
+
+    .nav-close {
+      top: var(--space-4);
+      right: var(--space-4);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav-trigger {
+      top: var(--space-4);
+      left: var(--space-4);
+      width: 40px;
+      height: 40px;
+    }
+
+    .theme-float {
+      top: var(--space-4);
+      right: var(--space-4);
+    }
+
+    .nav-primary {
+      gap: var(--space-3);
+    }
+
+    .nav-item {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+
+    .nav-label {
+      font-size: 1.8rem;
+    }
+  }
+</style>
+
+<script>
+  const trigger = document.getElementById('navTrigger');
+  const overlay = document.getElementById('navOverlay');
+  const closeBtn = document.getElementById('navClose');
+
+  // 计算滚动条宽度，防止页面抖动
+  function getScrollbarWidth() {
+    return window.innerWidth - document.documentElement.clientWidth;
+  }
+
+  function openNav() {
+    const scrollbarWidth = getScrollbarWidth();
+    trigger?.classList.add('active');
+    overlay?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    // 补偿滚动条宽度
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+
+  function closeNav() {
+    trigger?.classList.remove('active');
+    overlay?.classList.remove('active');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+
+  trigger?.addEventListener('click', () => {
+    if (overlay?.classList.contains('active')) {
+      closeNav();
+    } else {
+      openNav();
+    }
+  });
+
+  closeBtn?.addEventListener('click', closeNav);
+
+  // ESC 键关闭
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeNav();
+  });
+
+  // 点击链接后关闭
+  document.querySelectorAll('.nav-item').forEach(link => {
+    link.addEventListener('click', closeNav);
+  });
+</script>

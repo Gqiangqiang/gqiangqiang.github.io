@@ -1,11 +1,325 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+/**
+ * 首页 - 杂志式设计
+ * 沉浸式体验、大胆排版、艺术感布局
+ */
+import Layout from '../layouts/LayoutImmersive.astro';
+import HeroImmersive from '../components/HeroImmersive.astro';
+import MagazineCard from '../components/MagazineCard.astro';
+import { siteConfig } from '../config';
+import { getCollection } from 'astro:content';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+// 排序：精选文章优先，同级别按日期排序
+const posts = allPosts.sort((a, b) => {
+  // 精选文章优先
+  if (a.data.featured !== b.data.featured) {
+    return a.data.featured ? -1 : 1;
+  }
+  // 同级别按日期排序（新的在前）
+  return b.data.date.valueOf() - a.data.date.valueOf();
+});
+
+// 精选文章（已置顶）
+const featuredPosts = posts.filter(post => post.data.featured).slice(0, 2);
+
+// 最新文章（排除精选）
+const latestPosts = posts.filter(post => !post.data.featured).slice(0, 7);
+
+// 所有标签
+const allTags = [...new Set(posts.flatMap(post => post.data.tags))];
+
+// 文章布局分配
+const layouts = ['wide', 'default', 'tall', 'default', 'default', 'wide', 'default'] as const;
 ---
 
-<Layout>
-	<Welcome />
+<Layout title={siteConfig.title} currentPath="/">
+  <!-- Hero 区域 -->
+  <HeroImmersive />
+
+  <!-- 文章区域 -->
+  <section class="articles">
+    <div class="articles-container">
+      <!-- 区域标题 -->
+      <header class="section-header">
+        <div class="header-left">
+          <span class="header-label">Latest</span>
+          <h2 class="header-title">最新文章</h2>
+        </div>
+        <a href="/blog" class="header-link">
+          <span>查看全部</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+          </svg>
+        </a>
+      </header>
+
+      <!-- 精选文章 -->
+      {featuredPosts.length > 0 && (
+        <div class="featured-grid">
+          {featuredPosts.map((post, i) => (
+            <MagazineCard
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.date.toISOString()}
+              slug={post.id}
+              tags={post.data.tags}
+              readingTime={post.data.readingTime}
+              featured={true}
+              layout="wide"
+              index={i}
+            />
+          ))}
+        </div>
+      )}
+
+      <!-- 文章网格 -->
+      <div class="articles-grid">
+        {latestPosts.map((post, i) => (
+          <MagazineCard
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.date.toISOString()}
+            slug={post.id}
+            tags={post.data.tags}
+            readingTime={post.data.readingTime}
+            layout={layouts[i % layouts.length]}
+            index={i + featuredPosts.length}
+          />
+        ))}
+      </div>
+
+      <!-- 标签区域 -->
+      <div class="tags-section">
+        <div class="tags-header">
+          <span class="tags-label">Tags</span>
+          <span class="tags-count">{allTags.length} 个标签</span>
+        </div>
+        <div class="tags-list">
+          {allTags.slice(0, 15).map((tag) => (
+            <a href={`/tags/${tag}`} class="tag-link">
+              {tag}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 底部装饰 -->
+  <footer class="page-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <span class="brand-cn">{siteConfig.name}</span>
+        <span class="brand-en">{siteConfig.nameEn}</span>
+      </div>
+      <p class="footer-quote">"{siteConfig.author.signature}"</p>
+    </div>
+  </footer>
 </Layout>
+
+<style>
+  /* 文章区域 */
+  .articles {
+    position: relative;
+    padding: var(--space-20) 0;
+  }
+
+  .articles-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-8);
+  }
+
+  /* 区域头部 */
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: var(--space-12);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .header-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .header-title {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .header-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .header-link:hover {
+    color: var(--color-accent);
+    gap: var(--space-3);
+  }
+
+  /* 精选网格 */
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+
+  /* 文章网格 - 杂志式布局 */
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(200px, auto);
+    gap: var(--space-6);
+  }
+
+  /* 标签区域 */
+  .tags-section {
+    margin-top: var(--space-16);
+    padding-top: var(--space-10);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .tags-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  .tags-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .tags-count {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    opacity: 0.6;
+  }
+
+  .tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .tag-link {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .tag-link:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    background: var(--color-accent-light);
+    transform: translateY(-2px);
+  }
+
+  /* 底部装饰 */
+  .page-footer {
+    padding: var(--space-16) 0;
+    text-align: center;
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .footer-content {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  .brand-cn {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 300;
+    color: var(--color-text-primary);
+    letter-spacing: 0.1em;
+    opacity: 0.3;
+  }
+
+  .brand-en {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .footer-quote {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin: 0;
+    opacity: 0.7;
+  }
+
+  /* 响应式 */
+  @media (max-width: 1024px) {
+    .articles-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .articles-container {
+      padding: 0 var(--space-4);
+    }
+
+    .featured-grid,
+    .articles-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-4);
+    }
+
+    .header-title {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>

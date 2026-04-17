@@ -1,0 +1,88 @@
+---
+/**
+ * 页面头部组件
+ * 杂志风格设计
+ */
+interface Props {
+  label: string;
+  title: string;
+  description?: string;
+  count?: number;
+}
+
+const { label, title, description, count } = Astro.props;
+---
+
+<header class="page-header">
+  <div class="header-inner">
+    <span class="header-label">{label}</span>
+    <h1 class="header-title">{title}</h1>
+    {count !== undefined && (
+      <span class="header-count">{count}</span>
+    )}
+  </div>
+  {description && (
+    <p class="header-desc">{description}</p>
+  )}
+</header>
+
+<style>
+  .page-header {
+    padding: var(--space-16) var(--space-8) var(--space-12);
+    text-align: center;
+    position: relative;
+  }
+
+  .header-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .header-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .header-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .header-count {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    padding: var(--space-1) var(--space-3);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+    margin-top: var(--space-2);
+  }
+
+  .header-desc {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    max-width: 500px;
+    margin: var(--space-4) auto 0;
+    line-height: var(--leading-relaxed);
+  }
+
+  @media (max-width: 640px) {
+    .page-header {
+      padding: var(--space-12) var(--space-4) var(--space-8);
+    }
+
+    .header-desc {
+      font-size: var(--text-base);
+    }
+  }
+</style>

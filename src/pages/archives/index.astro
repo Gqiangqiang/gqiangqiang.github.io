@@ -1,0 +1,234 @@
+---
+/**
+ * 归档页面 - 时间线设计
+ */
+import LayoutImmersive from '../../layouts/LayoutImmersive.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { siteConfig } from '../../config';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// 按年月分组
+const postsByYearMonth = posts.reduce((acc, post) => {
+  const date = post.data.date;
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+
+  if (!acc[year]) acc[year] = {};
+  if (!acc[year][month]) acc[year][month] = [];
+  acc[year][month].push(post);
+
+  return acc;
+}, {} as Record<number, Record<number, typeof posts>>);
+
+const years = Object.keys(postsByYearMonth).map(Number).sort((a, b) => b - a);
+---
+
+<LayoutImmersive title={`归档 · ${siteConfig.name}`} currentPath="/archives">
+  <div class="archives-page">
+    <!-- 页面头部 -->
+    <PageHeader
+      label="Archives"
+      title="归档"
+      description="时光的痕迹，思想的沉淀"
+      count={posts.length}
+    />
+
+    <!-- 时间线 -->
+    <section class="timeline-section">
+      <div class="timeline-container">
+        <div class="timeline">
+          {years.map((year) => (
+            <div class="year-block">
+              <!-- 年份 -->
+              <div class="year-header">
+                <span class="year-number">{year}</span>
+                <span class="year-count">
+                  {Object.values(postsByYearMonth[year]).flat().length} 篇
+                </span>
+              </div>
+
+              <!-- 文章列表 -->
+              <div class="year-posts">
+                {Object.keys(postsByYearMonth[year])
+                  .map(Number)
+                  .sort((a, b) => b - a)
+                  .map((month) => (
+                    postsByYearMonth[year][month].map((post, index) => (
+                      <a
+                        href={`/blog/${post.id.replace('technology/', '').replace('.md', '')}`}
+                        class="post-row"
+                        style={`--delay: ${index * 50}ms`}
+                      >
+                        <span class="post-date">
+                          {month.toString().padStart(2, '0')}.{post.data.date.getDate().toString().padStart(2, '0')}
+                        </span>
+                        <span class="post-title">{post.data.title}</span>
+                        {post.data.featured && (
+                          <span class="post-featured">Featured</span>
+                        )}
+                        <span class="post-arrow">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                          </svg>
+                        </span>
+                      </a>
+                    ))
+                  ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</LayoutImmersive>
+
+<style>
+  .archives-page {
+    min-height: 100vh;
+  }
+
+  .timeline-section {
+    padding: 0 var(--space-8) var(--space-16);
+  }
+
+  .timeline-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+  }
+
+  .year-block {
+    position: relative;
+  }
+
+  .year-header {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .year-number {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  .year-count {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+  }
+
+  .year-posts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .post-row {
+    display: grid;
+    grid-template-columns: 60px 1fr auto auto;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-base);
+    opacity: 0;
+    animation: slideIn 0.4s ease forwards;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .post-row:hover {
+    border-color: var(--color-accent);
+    transform: translateX(8px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .post-date {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  .post-title {
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    line-height: var(--leading-snug);
+  }
+
+  .post-row:hover .post-title {
+    color: var(--color-accent);
+  }
+
+  .post-featured {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: white;
+    background: var(--color-accent);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .post-arrow {
+    color: var(--color-text-tertiary);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all var(--transition-fast);
+  }
+
+  .post-row:hover .post-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 640px) {
+    .timeline-section {
+      padding: 0 var(--space-4) var(--space-12);
+    }
+
+    .post-row {
+      grid-template-columns: 50px 1fr;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .post-featured,
+    .post-arrow {
+      display: none;
+    }
+  }
+</style>

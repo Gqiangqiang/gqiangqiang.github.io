@@ -1,0 +1,304 @@
+---
+/**
+ * Hero 区域组件
+ * 特点：动态墨迹效果、打字机动画
+ */
+---
+
+<section class="hero">
+  <div class="hero-content">
+    <!-- 装饰墨迹 -->
+    <div class="ink-decoration">
+      <svg class="ink-blob ink-blob-1" viewBox="0 0 200 200">
+        <path fill="currentColor" d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.5,90,-16.3,88.1,-1.1C86.2,14.1,79.8,28.2,71.1,40.5C62.4,52.8,51.4,63.3,38.4,70.8C25.4,78.3,12.7,82.8,-1.5,84.9C-15.7,87,-31.4,86.7,-45.2,80.7C-59,74.7,-70.9,63,-78.6,48.7C-86.3,34.4,-89.8,17.2,-89.2,0.4C-88.6,-16.4,-83.9,-32.8,-75.1,-46.2C-66.3,-59.6,-53.4,-70,-39.4,-77.1C-25.4,-84.2,-12.7,-88,1.3,-89.9C15.3,-91.8,30.6,-83.6,44.7,-76.4Z" transform="translate(100 100)" />
+      </svg>
+      <svg class="ink-blob ink-blob-2" viewBox="0 0 200 200">
+        <path fill="currentColor" d="M39.9,-65.7C52.3,-60.9,63.6,-52.4,71.1,-40.8C78.6,-29.2,82.3,-14.6,81.5,-0.5C80.7,13.6,75.4,27.2,67.4,38.6C59.4,50,48.7,59.2,36.5,66.1C24.3,73,12.1,77.6,-1.2,79.4C-14.5,81.2,-29,80.2,-42.1,74.1C-55.2,68,-66.9,56.8,-74.2,43C-81.5,29.2,-84.4,14.6,-83.8,0.3C-83.2,-14,-79,-28,-71.1,-40.3C-63.2,-52.6,-51.6,-63.2,-38.8,-67.9C-26,-72.6,-13,-71.4,0.4,-72C13.8,-72.6,27.5,-70.5,39.9,-65.7Z" transform="translate(100 100)" />
+      </svg>
+    </div>
+
+    <!-- 主标题 -->
+    <div class="hero-title-wrapper">
+      <h1 class="hero-title">
+        <span class="title-char" style="animation-delay: 0ms">墨</span>
+        <span class="title-char" style="animation-delay: 100ms">迹</span>
+      </h1>
+      <p class="hero-subtitle">
+        <span class="subtitle-text">Ink Flow</span>
+        <span class="subtitle-line"></span>
+      </p>
+    </div>
+
+    <!-- 打字机效果描述 -->
+    <div class="hero-description">
+      <p class="typewriter" id="typewriter"></p>
+      <span class="cursor">|</span>
+    </div>
+
+    <!-- 滚动提示 -->
+    <div class="scroll-hint">
+      <span class="scroll-text">向下滚动</span>
+      <div class="scroll-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景网格 -->
+  <div class="hero-grid"></div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: var(--space-20) var(--space-6);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 800px;
+  }
+
+  /* 墨迹装饰 */
+  .ink-decoration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .ink-blob {
+    position: absolute;
+    color: var(--color-accent);
+    opacity: 0.05;
+    animation: float 20s ease-in-out infinite;
+  }
+
+  .ink-blob-1 {
+    width: 600px;
+    height: 600px;
+    top: -200px;
+    left: -200px;
+    animation-delay: 0s;
+  }
+
+  .ink-blob-2 {
+    width: 500px;
+    height: 500px;
+    bottom: -150px;
+    right: -150px;
+    animation-delay: -10s;
+  }
+
+  /* 标题 */
+  .hero-title-wrapper {
+    margin-bottom: var(--space-8);
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 15vw, 10rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+    position: relative;
+  }
+
+  .title-char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: charReveal 0.8s ease forwards;
+  }
+
+  @keyframes charReveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero-subtitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 300;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.5s forwards;
+  }
+
+  .subtitle-line {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-accent), transparent);
+  }
+
+  /* 描述文字 */
+  .hero-description {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    margin-bottom: var(--space-12);
+    min-height: 2em;
+  }
+
+  .typewriter {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .cursor {
+    font-size: var(--text-lg);
+    color: var(--color-accent);
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* 滚动提示 */
+  .scroll-hint {
+    position: absolute;
+    bottom: var(--space-10);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    opacity: 0;
+    animation: fadeIn 1s ease 1.5s forwards;
+  }
+
+  .scroll-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .scroll-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-text-tertiary);
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .scroll-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  /* 背景网格 */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--color-border-light) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-border-light) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.5;
+    mask-image: radial-gradient(ellipse 80% 50% at 50% 50%, black, transparent);
+    -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 50%, black, transparent);
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      min-height: 80vh;
+      padding: var(--space-16) var(--space-4);
+    }
+
+    .hero-title {
+      letter-spacing: 0.05em;
+    }
+
+    .ink-blob-1 {
+      width: 400px;
+      height: 400px;
+      top: -100px;
+      left: -100px;
+    }
+
+    .ink-blob-2 {
+      width: 300px;
+      height: 300px;
+      bottom: -80px;
+      right: -80px;
+    }
+  }
+</style>
+
+<script>
+  // 打字机效果
+  const texts = [
+    '用文字记录思考',
+    '以代码书写人生',
+    '在墨迹中寻找灵感',
+    '让思想如墨流淌'
+  ];
+
+  const typewriter = document.getElementById('typewriter');
+  let textIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  let isPaused = false;
+
+  function type() {
+    const currentText = texts[textIndex];
+
+    if (isPaused) {
+      setTimeout(type, 100);
+      return;
+    }
+
+    if (!isDeleting) {
+      typewriter!.textContent = currentText.substring(0, charIndex + 1);
+      charIndex++;
+
+      if (charIndex === currentText.length) {
+        isPaused = true;
+        setTimeout(() => {
+          isPaused = false;
+          isDeleting = true;
+        }, 2000);
+      }
+    } else {
+      typewriter!.textContent = currentText.substring(0, charIndex - 1);
+      charIndex--;
+
+      if (charIndex === 0) {
+        isDeleting = false;
+        textIndex = (textIndex + 1) % texts.length;
+      }
+    }
+
+    const speed = isDeleting ? 50 : 100;
+    setTimeout(type, speed);
+  }
+
+  setTimeout(type, 1000);
+</script>

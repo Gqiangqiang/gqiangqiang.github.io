@@ -1,11 +1,12 @@
 ---
 /**
- * 主布局组件
- * 特点：优雅的页面过渡、响应式设计
+ * 沉浸式布局
+ * 无固定顶部导航、全屏体验
  */
-import Nav from '../components/Nav.astro';
+import FloatingNav from '../components/FloatingNav.astro';
 import Footer from '../components/Footer.astro';
 import ProgressBar from '../components/ProgressBar.astro';
+import { siteConfig } from '../config';
 import '../styles/global.css';
 
 interface Props {
@@ -16,17 +17,20 @@ interface Props {
 }
 
 const {
-  title = '墨迹 · Ink Flow',
-  description = '用文字记录思考，以代码书写人生',
-  image = '/og-image.png',
+  title = siteConfig.title,
+  description = siteConfig.description,
+  image = siteConfig.icons.ogImage,
   currentPath = '',
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// 从 config 获取主题色
+const { theme } = siteConfig;
 ---
 
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang={siteConfig.seo.language} data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -46,19 +50,35 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="twitter:image" content={image} />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href={siteConfig.icons.favicon} />
+    <link rel="icon" type="image/x-icon" href={siteConfig.icons.faviconIco} />
+    <link rel="apple-touch-icon" href={siteConfig.icons.appleTouchIcon} />
 
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />
 
     <!-- RSS Feed -->
-    <link rel="alternate" type="application/rss+xml" title={title} href="/rss.xml" />
+    {siteConfig.features.rss && (
+      <link rel="alternate" type="application/rss+xml" title={title} href="/rss.xml" />
+    )}
 
     <title>{title}</title>
 
-    <!-- 主题初始化脚本（防止闪烁） -->
+    <!-- 主题色 CSS 变量注入 -->
+    <style is:inline>
+      :root {
+        --color-accent: ${theme.primary};
+        --color-accent-light: ${theme.primaryLight};
+        --color-accent-muted: ${theme.primaryMuted};
+      }
+      [data-theme="dark"] {
+        --color-accent: ${theme.primaryDark};
+        --color-accent-light: ${theme.primaryDarkLight};
+        --color-accent-muted: ${theme.primaryDarkLight};
+      }
+    </style>
+
+    <!-- 主题初始化脚本 -->
     <script is:inline>
       (function() {
         const theme = localStorage.getItem('theme');
@@ -82,8 +102,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <!-- 阅读进度条 -->
     <ProgressBar />
 
-    <!-- 导航栏 -->
-    <Nav currentPath={currentPath} />
+    <!-- 悬浮导航 -->
+    <FloatingNav currentPath={currentPath} />
 
     <!-- 主内容区 -->
     <main class="main" id="main">
@@ -92,9 +112,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <!-- 页脚 -->
     <Footer />
-
-    <!-- 页面过渡动画 -->
-    <div class="page-transition-overlay" id="transitionOverlay"></div>
   </body>
 </html>
 
@@ -134,33 +151,5 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
   .main {
     flex: 1;
-    padding-top: 80px; /* 为固定导航栏留出空间 */
-  }
-
-  /* 页面过渡遮罩 */
-  .page-transition-overlay {
-    position: fixed;
-    inset: 0;
-    background: var(--color-bg-primary);
-    z-index: 9999;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity var(--transition-base);
-  }
-
-  .page-transition-overlay.active {
-    opacity: 1;
   }
 </style>
-
-<script>
-  // 页面过渡效果
-  document.addEventListener('astro:page-load', () => {
-    const main = document.getElementById('main');
-    main?.classList.add('page-enter');
-
-    requestAnimationFrame(() => {
-      main?.classList.remove('page-enter');
-    });
-  });
-</script>

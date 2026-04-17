@@ -1,0 +1,137 @@
+---
+/**
+ * 标签列表页
+ */
+import LayoutImmersive from '../../layouts/LayoutImmersive.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { siteConfig } from '../../config';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+const tagCounts = allPosts.reduce((acc, post) => {
+  post.data.tags.forEach(tag => {
+    acc[tag] = (acc[tag] || 0) + 1;
+  });
+  return acc;
+}, {} as Record<string, number>);
+
+const tags = Object.entries(tagCounts)
+  .sort((a, b) => b[1] - a[1])
+  .map(([name, count]) => ({ name, count }));
+---
+
+<LayoutImmersive title={`标签 · ${siteConfig.name}`} currentPath="/tags">
+  <div class="tags-page">
+    <!-- 页面头部 -->
+    <PageHeader
+      label="Tags"
+      title="标签"
+      description={`${tags.length} 个标签，${allPosts.length} 篇文章`}
+    />
+
+    <!-- 标签云 -->
+    <section class="tags-section">
+      <div class="tags-container">
+        <div class="tags-grid">
+          {tags.map(({ name, count }, index) => (
+            <a
+              href={`/tags/${name}`}
+              class="tag-card"
+              style={`--delay: ${index * 40}ms`}
+            >
+              <span class="tag-hash">#</span>
+              <span class="tag-name">{name}</span>
+              <span class="tag-count">{count}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</LayoutImmersive>
+
+<style>
+  .tags-page {
+    min-height: 100vh;
+  }
+
+  .tags-section {
+    padding: 0 var(--space-8) var(--space-16);
+  }
+
+  .tags-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .tag-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-base);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: cardReveal 0.5s ease forwards;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes cardReveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .tag-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .tag-hash {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    color: var(--color-accent);
+    opacity: 0.5;
+    line-height: 1;
+  }
+
+  .tag-name {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .tag-card:hover .tag-name {
+    color: var(--color-accent);
+  }
+
+  .tag-count {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  @media (max-width: 640px) {
+    .tags-section {
+      padding: 0 var(--space-4) var(--space-12);
+    }
+
+    .tags-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

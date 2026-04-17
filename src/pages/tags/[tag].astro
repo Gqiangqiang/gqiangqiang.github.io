@@ -1,0 +1,163 @@
+---
+/**
+ * 标签详情页
+ */
+import LayoutImmersive from '../../layouts/LayoutImmersive.astro';
+import MagazineCard from '../../components/MagazineCard.astro';
+import { siteConfig } from '../../config';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+  const allTags = [...new Set(allPosts.flatMap(post => post.data.tags))];
+
+  return allTags.map(tag => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts
+  .filter(post => post.data.tags.includes(tag))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<LayoutImmersive title={`#${tag} · ${siteConfig.name}`} currentPath="/tags">
+  <div class="tag-page">
+    <!-- 页面头部 -->
+    <header class="page-header">
+      <a href="/tags" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        所有标签
+      </a>
+      <div class="header-content">
+        <span class="header-label">Tag</span>
+        <h1 class="header-title">
+          <span class="title-hash">#</span>
+          {tag}
+        </h1>
+        <span class="header-count">{posts.length} 篇文章</span>
+      </div>
+    </header>
+
+    <!-- 文章列表 -->
+    <section class="articles-section">
+      <div class="articles-container">
+        <div class="articles-grid">
+          {posts.map((post, i) => (
+            <MagazineCard
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.date.toISOString()}
+              slug={post.id}
+              tags={post.data.tags.filter(t => t !== tag)}
+              readingTime={post.data.readingTime}
+              index={i}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</LayoutImmersive>
+
+<style>
+  .tag-page {
+    min-height: 100vh;
+  }
+
+  .page-header {
+    padding: var(--space-16) var(--space-8) var(--space-12);
+    text-align: center;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    text-decoration: none;
+    margin-bottom: var(--space-6);
+    transition: color var(--transition-fast);
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+  }
+
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .header-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1;
+    margin: 0;
+  }
+
+  .title-hash {
+    color: var(--color-accent);
+    opacity: 0.5;
+  }
+
+  .header-count {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    padding: var(--space-1) var(--space-3);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+  }
+
+  .articles-section {
+    padding: 0 var(--space-8) var(--space-16);
+  }
+
+  .articles-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      padding: var(--space-12) var(--space-4) var(--space-8);
+    }
+
+    .articles-section {
+      padding: 0 var(--space-4) var(--space-12);
+    }
+
+    .articles-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,66 @@
+---
+/**
+ * 阅读进度指示器
+ * 特点：渐变效果、平滑动画
+ */
+---
+
+<div class="progress-bar" id="progressBar">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<style>
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    z-index: calc(var(--z-sticky) + 1);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  .progress-bar.visible {
+    opacity: 1;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(
+      90deg,
+      var(--color-accent-500),
+      var(--color-accent-400)
+    );
+    transition: width 50ms linear;
+    box-shadow: 0 0 10px var(--color-glow);
+  }
+</style>
+
+<script>
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+
+    if (progressFill) {
+      progressFill.style.width = `${Math.min(progress, 100)}%`;
+    }
+
+    if (progressBar) {
+      if (scrollTop > 100) {
+        progressBar.classList.add('visible');
+      } else {
+        progressBar.classList.remove('visible');
+      }
+    }
+  }
+
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+</script>

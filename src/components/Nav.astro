@@ -1,0 +1,323 @@
+---
+/**
+ * 导航栏组件
+ * 特点：毛玻璃效果、滚动隐藏、主题切换
+ */
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '' } = Astro.props;
+
+const navLinks = [
+  { href: '/', label: '首页', icon: 'home' },
+  { href: '/blog', label: '文章', icon: 'article' },
+  { href: '/archives', label: '归档', icon: 'archive' },
+  { href: '/tags', label: '标签', icon: 'tag' },
+  { href: '/about', label: '关于', icon: 'user' },
+];
+---
+
+<nav class="nav" id="nav">
+  <div class="nav-container">
+    <!-- Logo -->
+    <a href="/" class="nav-logo">
+      <span class="logo-text">墨迹</span>
+      <span class="logo-sub">Ink Flow</span>
+    </a>
+
+    <!-- 导航链接 -->
+    <div class="nav-links">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class:list={['nav-link', { active: currentPath === link.href }]}
+        >
+          <span class="nav-link-text">{link.label}</span>
+          <span class="nav-link-underline"></span>
+        </a>
+      ))}
+    </div>
+
+    <!-- 右侧操作区 -->
+    <div class="nav-actions">
+      <ThemeToggle />
+
+      <!-- 移动端菜单按钮 -->
+      <button class="nav-menu-btn" id="menuBtn" aria-label="菜单">
+        <span class="menu-line"></span>
+        <span class="menu-line"></span>
+        <span class="menu-line"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 移动端菜单 -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-content">
+      {navLinks.map((link, index) => (
+        <a
+          href={link.href}
+          class:list={['mobile-link', { active: currentPath === link.href }]}
+          style={`animation-delay: ${index * 50}ms`}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
+
+<style>
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+    padding: var(--space-4) 0;
+    background: var(--color-bg-primary);
+    transition: all var(--transition-base);
+  }
+
+  .nav.scrolled {
+    padding: var(--space-3) 0;
+    background: rgba(var(--color-bg-primary-rgb, 255, 255, 255), 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .nav.hidden {
+    transform: translateY(-100%);
+  }
+
+  .nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+  }
+
+  /* Logo */
+  .nav-logo {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    gap: 0;
+  }
+
+  .logo-text {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .logo-sub {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 300;
+    color: var(--color-text-tertiary);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+  }
+
+  /* 导航链接 */
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .nav-link {
+    position: relative;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--color-text-primary);
+  }
+
+  .nav-link-underline {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--color-accent);
+    transform: translateX(-50%);
+    transition: width var(--transition-base);
+  }
+
+  .nav-link:hover .nav-link-underline,
+  .nav-link.active .nav-link-underline {
+    width: calc(100% - var(--space-8));
+  }
+
+  /* 右侧操作区 */
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  /* 移动端菜单按钮 */
+  .nav-menu-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .menu-line {
+    width: 100%;
+    height: 2px;
+    background: var(--color-text-primary);
+    border-radius: 2px;
+    transition: all var(--transition-fast);
+    transform-origin: center;
+  }
+
+  .nav-menu-btn.active .menu-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .nav-menu-btn.active .menu-line:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-menu-btn.active .menu-line:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+
+  /* 移动端菜单 */
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-bg-primary);
+    z-index: calc(var(--z-sticky) - 1);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+  }
+
+  .mobile-menu.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobile-menu-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: var(--space-4);
+  }
+
+  .mobile-link {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all var(--transition-base);
+  }
+
+  .mobile-menu.active .mobile-link {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .mobile-link:hover,
+  .mobile-link.active {
+    color: var(--color-accent);
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none;
+    }
+
+    .nav-menu-btn {
+      display: flex;
+    }
+  }
+</style>
+
+<script>
+  // 导航栏滚动效果
+  const nav = document.getElementById('nav');
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  let lastScrollY = 0;
+  let ticking = false;
+
+  function updateNav() {
+    const scrollY = window.scrollY;
+
+    if (scrollY > 50) {
+      nav?.classList.add('scrolled');
+    } else {
+      nav?.classList.remove('scrolled');
+    }
+
+    // 向下滚动隐藏，向上滚动显示
+    if (scrollY > lastScrollY && scrollY > 200) {
+      nav?.classList.add('hidden');
+    } else {
+      nav?.classList.remove('hidden');
+    }
+
+    lastScrollY = scrollY;
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(updateNav);
+      ticking = true;
+    }
+  });
+
+  // 移动端菜单
+  menuBtn?.addEventListener('click', () => {
+    menuBtn.classList.toggle('active');
+    mobileMenu?.classList.toggle('active');
+    document.body.style.overflow = mobileMenu?.classList.contains('active') ? 'hidden' : '';
+  });
+
+  // 点击菜单链接后关闭菜单
+  document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => {
+      menuBtn?.classList.remove('active');
+      mobileMenu?.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+  });
+</script>

@@ -1,0 +1,84 @@
+---
+/**
+ * 生活列表页
+ */
+import LayoutImmersive from '../../layouts/LayoutImmersive.astro';
+import MagazineCard from '../../components/MagazineCard.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { siteConfig } from '../../config';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('life', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const layouts = ['wide', 'default', 'default', 'tall', 'default', 'default', 'wide', 'default', 'default'] as const;
+---
+
+<LayoutImmersive title={`生活 · ${siteConfig.name}`} currentPath="/life">
+  <div class="life-page">
+    <PageHeader
+      label="Life"
+      title="生活"
+      description="记录生活中的点点滴滴"
+      count={posts.length}
+    />
+
+    <section class="articles-section">
+      <div class="articles-container">
+        <div class="articles-grid">
+          {posts.map((post, i) => (
+            <MagazineCard
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.date.toISOString()}
+              slug={post.id}
+              tags={post.data.tags}
+              readingTime={post.data.readingTime}
+              featured={post.data.featured}
+              layout={post.data.featured ? 'wide' : layouts[i % layouts.length]}
+              index={i}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</LayoutImmersive>
+
+<style>
+  .life-page {
+    min-height: 100vh;
+  }
+
+  .articles-section {
+    padding: 0 var(--space-8) var(--space-16);
+  }
+
+  .articles-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(200px, auto);
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 1024px) {
+    .articles-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .articles-section {
+      padding: 0 var(--space-4) var(--space-12);
+    }
+
+    .articles-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

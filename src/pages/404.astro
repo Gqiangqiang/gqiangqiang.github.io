@@ -1,0 +1,113 @@
+---
+/**
+ * 404 页面
+ */
+import LayoutImmersive from '../layouts/LayoutImmersive.astro';
+import { siteConfig } from '../config';
+---
+
+<LayoutImmersive title={`404 · ${siteConfig.name}`}>
+  <div class="not-found">
+    <div class="content">
+      <div class="error-code">
+        <span class="digit">4</span>
+        <span class="digit middle">0</span>
+        <span class="digit">4</span>
+      </div>
+      <h1 class="title">页面未找到</h1>
+      <p class="description">
+        抱歉，你访问的页面似乎已经消失在墨迹中了...
+      </p>
+      <a href="/" class="back-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+          <path d="M7 17L17 7M17 7H7M17 7V17"/>
+        </svg>
+        返回首页
+      </a>
+    </div>
+  </div>
+</LayoutImmersive>
+
+<style>
+  .not-found {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+  }
+
+  .content {
+    text-align: center;
+  }
+
+  .error-code {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .digit {
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 20vw, 12rem);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1;
+    opacity: 0.1;
+    animation: digitFloat 3s ease-in-out infinite;
+  }
+
+  .digit:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .digit.middle {
+    animation-delay: 0.5s;
+    color: var(--color-accent);
+    opacity: 1;
+  }
+
+  .digit:nth-child(3) {
+    animation-delay: 1s;
+  }
+
+  @keyframes digitFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .description {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    max-width: 400px;
+    margin: 0 auto var(--space-8);
+  }
+
+  .back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: white;
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: all var(--transition-base);
+  }
+
+  .back-home:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+</style>
