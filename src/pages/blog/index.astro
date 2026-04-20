@@ -10,7 +10,6 @@ import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const posts = allPosts
-  .filter(post => post.id.startsWith('technology/'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 // 文章布局分配

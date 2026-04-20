@@ -37,6 +37,7 @@ const layouts = ['wide', 'default', 'default', 'tall', 'default', 'default', 'wi
               featured={post.data.featured}
               layout={post.data.featured ? 'wide' : layouts[i % layouts.length]}
               index={i}
+              basePath="/travel"
             />
           ))}
         </div>

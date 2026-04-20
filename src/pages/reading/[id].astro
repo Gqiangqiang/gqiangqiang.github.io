@@ -1,0 +1,396 @@
+---
+/**
+ * 书籍详情页面
+ */
+import LayoutImmersive from '../../layouts/LayoutImmersive.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { siteConfig } from '../../config';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const books = await getCollection('reading');
+  return books.map(book => ({
+    params: { id: book.id },
+    props: { book },
+  }));
+}
+
+const { book } = Astro.props;
+const { Content } = await render(book);
+
+const bookData = {
+  id: book.id,
+  title: book.data.title,
+  author: book.data.author,
+  translator: book.data.translator,
+  publisher: book.data.publisher,
+  publishDate: book.data.publishDate,
+  category: book.data.category,
+  cover: book.data.cover,
+  rating: book.data.rating,
+  status: book.data.status,
+  progress: book.data.progress,
+  hasNotes: book.data.hasNotes,
+  tags: book.data.tags,
+};
+---
+
+<LayoutImmersive title={`${bookData.title} · ${siteConfig.name}`} currentPath="/reading">
+  <div class="book-detail-page">
+    <PageHeader
+      label={bookData.category}
+      title={bookData.title}
+      description={`${bookData.author}${bookData.translator ? ` / 译者: ${bookData.translator}` : ''}`}
+    />
+
+    <section class="book-content">
+      <div class="content-container">
+        <div class="book-detail">
+          <div class="book-cover">
+            {bookData.cover ? (
+              <img src={bookData.cover} alt={bookData.title} />
+            ) : (
+              <div class="cover-placeholder">
+                <span>{bookData.title.charAt(0)}</span>
+              </div>
+            )}
+            <div class="status-badge" data-status={bookData.status}>
+              {bookData.status === 'reading' ? '正在阅读' : bookData.status === 'finished' ? '已读完' : '未读'}
+            </div>
+          </div>
+
+          <div class="book-info">
+            <div class="info-row">
+              <span class="info-label">作者</span>
+              <span class="info-value">{bookData.author}</span>
+            </div>
+            {bookData.translator && (
+              <div class="info-row">
+                <span class="info-label">译者</span>
+                <span class="info-value">{bookData.translator}</span>
+              </div>
+            )}
+            {bookData.publisher && (
+              <div class="info-row">
+                <span class="info-label">出版社</span>
+                <span class="info-value">{bookData.publisher}</span>
+              </div>
+            )}
+            {bookData.publishDate && (
+              <div class="info-row">
+                <span class="info-label">出版日期</span>
+                <span class="info-value">{bookData.publishDate.toLocaleDateString('zh-CN')}</span>
+              </div>
+            )}
+            <div class="info-row">
+              <span class="info-label">分类</span>
+              <span class="info-value">{bookData.category}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">评分</span>
+              <div class="book-rating">
+                {Array.from({ length: 5 }).map((_, idx) => (
+                  <span class:list={['star', { filled: idx < bookData.rating }]}>★</span>
+                ))}
+              </div>
+            </div>
+            {bookData.status === 'reading' && (
+              <div class="info-row">
+                <span class="info-label">阅读进度</span>
+                <div class="reading-progress">
+                  <div class="progress-bar" style={`--progress: ${bookData.progress}%`}></div>
+                  <span class="progress-text">{bookData.progress}%</span>
+                </div>
+              </div>
+            )}
+            {bookData.tags.length > 0 && (
+              <div class="info-row">
+                <span class="info-label">标签</span>
+                <div class="book-tags">
+                  {bookData.tags.map(tag => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {bookData.hasNotes && (
+          <div class="notes-section">
+            <!-- <h2 class="section-title">读书笔记</h2> -->
+            <div class="markdown-content">
+              <Content />
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  </div>
+</LayoutImmersive>
+
+<style>
+  .book-detail-page {
+    min-height: 100vh;
+  }
+
+  .content-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 var(--space-8) var(--space-16);
+  }
+
+  .book-detail {
+    display: flex;
+    gap: var(--space-8);
+    padding: var(--space-8);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-12);
+  }
+
+  .book-cover {
+    position: relative;
+    width: 200px;
+    height: 300px;
+    flex-shrink: 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cover-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: var(--text-4xl);
+    font-weight: 700;
+    color: var(--color-text-tertiary);
+    background: var(--color-bg-tertiary);
+  }
+
+  .status-badge {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-xs);
+    font-family: var(--font-mono);
+    border-radius: var(--radius-full);
+  }
+
+  .status-badge[data-status="reading"] {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .status-badge[data-status="finished"] {
+    background: var(--color-text-tertiary);
+    color: white;
+  }
+
+  .status-badge[data-status="unread"] {
+    background: var(--color-border);
+    color: var(--color-text-primary);
+  }
+
+  .book-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .info-label {
+    width: 80px;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  .info-value {
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+  }
+
+  .book-rating {
+    display: flex;
+    gap: 2px;
+  }
+
+  .star {
+    font-size: var(--text-sm);
+    color: var(--color-border);
+  }
+
+  .star.filled {
+    color: var(--color-accent);
+  }
+
+  .reading-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+  }
+
+  .reading-progress .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  .reading-progress .progress-bar::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: var(--progress);
+    background: var(--color-accent);
+  }
+
+  .progress-text {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .book-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tag {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-accent);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+  }
+
+  .notes-section {
+    padding: var(--space-8);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-xl);
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-6) 0;
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .markdown-content {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  .markdown-content :global(h2) {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: var(--space-8) 0 var(--space-4);
+  }
+
+  .markdown-content :global(h3) {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: var(--space-6) 0 var(--space-3);
+  }
+
+  .markdown-content :global(p) {
+    margin: 0 0 var(--space-4);
+  }
+
+  .markdown-content :global(ul),
+  .markdown-content :global(ol) {
+    margin: 0 0 var(--space-4);
+    padding-left: var(--space-6);
+  }
+
+  .markdown-content :global(li) {
+    margin-bottom: var(--space-2);
+  }
+
+  .markdown-content :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    padding: 0.15em 0.4em;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+  }
+
+  .markdown-content :global(pre) {
+    margin: 0 0 var(--space-4);
+    padding: var(--space-4);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+  }
+
+  .markdown-content :global(pre code) {
+    padding: 0;
+    background: none;
+  }
+
+  @media (max-width: 768px) {
+    .book-detail {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .book-cover {
+      width: 160px;
+      height: 240px;
+    }
+
+    .book-info {
+      width: 100%;
+    }
+
+    .info-row {
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .info-label {
+      width: auto;
+    }
+
+    .content-container {
+      padding-left: var(--space-4);
+      padding-right: var(--space-4);
+    }
+  }
+</style>

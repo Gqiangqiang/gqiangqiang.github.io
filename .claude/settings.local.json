@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:4321/)",
+      "Bash(find ~/.claude/projects -name \"*.jsonl\" -type f -exec ls -lt {} +)",
+      "Bash(curl -s http://localhost:4321)",
+      "Bash(pkill -f \"astro dev\")",
+      "Bash(curl -s http://localhost:4321/blog)",
+      "Bash(curl -s http://localhost:4321/archives)",
+      "Bash(curl -s http://localhost:4321/tags)",
+      "Bash(curl -s http://localhost:4321/about)",
+      "Bash(curl -s http://localhost:4321/blog/modern-frontend-architecture)",
+      "Bash(curl -s http://localhost:4321/blog/javascript-async-programming)",
+      "Bash(curl -s http://localhost:4321/tags/JavaScript)",
+      "Bash(curl -s http://localhost:4321/reading)",
+      "Bash(kill 81256)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(curl -I \"https://img3.doubanio.com/view/subject/l/public/s35376027.jpg\")",
+      "Bash(curl -s --max-time 10 \"https://img3.doubanio.com/view/subject/l/public/s35376027.jpg\" -o /tmp/test_cover.jpg)",
+      "Read(//tmp/**)",
+      "Bash(curl -s --max-time 10 \"https://img9.doubanio.com/view/subject/l/public/s35376027.jpg\" -o /tmp/test_cover2.jpg)",
+      "WebFetch(domain:img3.doubanio.com)",
+      "Bash(curl -I -s \"https://img3.doubanio.com/view/subject/l/public/s35376027.jpg\")",
+      "Bash(curl -s http://localhost:4322/blog)",
+      "Bash(node *)",
+      "Bash(curl -s http://localhost:4322/life)",
+      "Bash(curl -s http://localhost:4321/life)",
+      "Bash(curl -s http://localhost:4321/travel)",
+      "Bash(curl -s http://localhost:4321/travel/南京)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(gh auth *)",
+      "Bash(ssh-keygen -t ed25519 -C \"your_email@example.com\")",
+      "Bash(ssh-keygen -t ed25519 -C \"gqiangqiang@github\" -N \"\" -f ~/.ssh/id_ed25519)",
+      "Bash(ssh-keygen -t ed25519 -C \"gqiangqiang@github\" -N \"\" -f ~/.ssh/id_ed25519_github)",
+      "Bash(pbcopy)"
+    ]
+  }
+}

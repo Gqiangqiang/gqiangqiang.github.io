@@ -58,7 +58,7 @@ const years = Object.keys(postsByYearMonth).map(Number).sort((a, b) => b - a);
                   .map((month) => (
                     postsByYearMonth[year][month].map((post, index) => (
                       <a
-                        href={`/blog/${post.id.replace('technology/', '').replace('.md', '')}`}
+                        href={`/blog/${post.id.replace('/', '').replace('.md', '')}`}
                         class="post-row"
                         style={`--delay: ${index * 50}ms`}
                       >

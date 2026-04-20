@@ -13,6 +13,7 @@ interface Props {
   featured?: boolean;
   layout?: 'default' | 'wide' | 'tall';
   index?: number;
+  basePath?: string;
 }
 
 const {
@@ -24,7 +25,8 @@ const {
   readingTime = '5 分钟',
   featured = false,
   layout = 'default',
-  index = 0
+  index = 0,
+  basePath = '/blog'
 } = Astro.props;
 
 // 转换 slug: 移除路径前缀和 .md 扩展名
@@ -42,7 +44,7 @@ const year = new Date(date).getFullYear();
   class:list={['article-card', layout, { featured }]}
   style={`--index: ${index}`}
 >
-  <a href={`/blog/${articleSlug}`} class="card-link">
+  <a href={`${basePath}/${articleSlug}`} class="card-link">
     <!-- 序号 -->
     <span class="card-number">{String(index + 1).padStart(2, '0')}</span>
 
